@@ -14,6 +14,15 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
     image_url = db.Column(db.String)
     bio = db.Column(db.String)
+
+    @validates('username')
+    def validate_username(self, key, username):
+        breakpoint()
+        if username == "":
+            return {'message' : '422 : Unprocessable entry'}, 422
+        elif User.query.filter(User.username == username).first():
+            return {'message' : '422 : Unprocessable entry'}, 422
+        return username
     
     @hybrid_property
     def password_hash(self):
@@ -30,6 +39,8 @@ class User(db.Model, SerializerMixin):
         )
     
     recipes = db.relationship('Recipe', back_populates='user')
+
+    serialize_rules = ('-recipes',)
 
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
@@ -48,19 +59,4 @@ class Recipe(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='recipes')
 
-    # @validates('instructions')
-    # def instructions(self, key, instructions):
-    #     if len(instructions) < 50:
-    #         raise ValueError('Instructions must have 50 characters minimum')
-    #     return instructions
-
-    # @hybrid_property
-    # def instructions(self):
-    #     return self._instructions
-
-    # @instructions.setter
-    # def instructions(self, value):
-    #     if len(value) < 50:
-    #         raise IntegrityError("Instructions must be at least 50 characters long.", value, None)
-        
-    #     self._instructions = value
+    serialize_rules = ('-user',)

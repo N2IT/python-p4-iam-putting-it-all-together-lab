@@ -3,12 +3,33 @@
 from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import validates
 
 from config import app, db, api
 from models import User, Recipe
 
 class Signup(Resource):
-    pass
+
+    def post(self):
+        breakpoint()
+        data_form = request.get_json()
+        if 'username' in data_form:
+            new_user = User(
+                username = data_form['username'],
+                image_url = data_form['image_url'],
+                bio = data_form['bio']
+            )
+
+            new_user.password_hash = data_form['password']
+            session['user_id'] = new_user.id
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            return new_user.to_dict(), 201
+
+        else:
+            return {'message' : '422: Unprocessable Entry'}, 422
 
 class CheckSession(Resource):
     pass

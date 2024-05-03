@@ -60,7 +60,7 @@ class TestSignup:
             db.session.commit()
         
         with app.test_client() as client:
-            
+            breakpoint()
             response = client.post('/signup', json={
                 'password': 'pikachu',
                 'bio': '''I wanna be the very best
