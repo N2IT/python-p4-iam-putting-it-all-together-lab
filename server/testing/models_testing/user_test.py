@@ -71,7 +71,7 @@ class TestUser:
         '''requires each record to have a username.'''
 
         with app.app_context():
-
+ 
             User.query.delete()
             db.session.commit()
 
@@ -89,7 +89,7 @@ class TestUser:
 
             User.query.delete()
             db.session.commit()
-
+            
             user = User(username="Prabhdip")
 
             recipe_1 = Recipe(
