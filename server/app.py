@@ -11,7 +11,7 @@ from models import User, Recipe
 class Signup(Resource):
 
     def post(self):
-        breakpoint()
+        # breakpoint()
         data_form = request.get_json()
         if 'username' in data_form:
             new_user = User(
@@ -32,13 +32,42 @@ class Signup(Resource):
             return {'message' : '422: Unprocessable Entry'}, 422
 
 class CheckSession(Resource):
-    pass
+    def get(self):
+        if session['user_id']:
+            user = User.query.filter(User.id == session.get('user_id')).first()
+            return user.to_dict(), 200
+        else:
+            return {'message' : '401 : Unauthorized'}, 401
 
 class Login(Resource):
-    pass
+    def post(self):
+        form_data = request.get_json()
+        username = form_data['username']
+        password = form_data['password']
+
+        user = User.query.filter(User.username == username).first()
+
+        if user is None:
+            return {'error' : 'Invalid Username or password'}, 401
+
+        if user.authenticate(password):
+            session['user_id'] = user.id
+            return user.to_dict(), 200
+        
+        return {'error' : '401: Unauthorized'}
+
 
 class Logout(Resource):
-    pass
+    def delete(self):
+        breakpoint()
+        session['user_id'] = session.get('user_id')
+        if session['user_id']:
+            session['user_id'] = None
+            return {}, 204
+        
+        return {'error' : '401: Unauthorized'}, 401
+        
+        
 
 class RecipeIndex(Resource):
     pass

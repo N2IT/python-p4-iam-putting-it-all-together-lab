@@ -17,7 +17,7 @@ class User(db.Model, SerializerMixin):
 
     @validates('username')
     def validate_username(self, key, username):
-        breakpoint()
+        # breakpoint()
         if username == "":
             return {'message' : '422 : Unprocessable entry'}, 422
         elif User.query.filter(User.username == username).first():
@@ -40,7 +40,7 @@ class User(db.Model, SerializerMixin):
     
     recipes = db.relationship('Recipe', back_populates='user')
 
-    serialize_rules = ('-recipes',)
+    serialize_rules = ('-recipes.user',)
 
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
@@ -59,4 +59,4 @@ class Recipe(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='recipes')
 
-    serialize_rules = ('-user',)
+    serialize_rules = ('-user.recipes',)
