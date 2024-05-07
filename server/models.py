@@ -17,7 +17,6 @@ class User(db.Model, SerializerMixin):
 
     @validates('username')
     def validate_username(self, key, username):
-        # breakpoint()
         if username == "":
             return {'message' : '422 : Unprocessable entry'}, 422
         elif User.query.filter(User.username == username).first():

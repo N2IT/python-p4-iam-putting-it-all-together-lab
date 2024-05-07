@@ -196,7 +196,7 @@ class TestLogout:
             db.session.commit()
         
         with app.test_client() as client:
-
+        
             client.post('/signup', json={
                 'username': 'ashketchum',
                 'password': 'pikachu',
@@ -209,6 +209,7 @@ class TestLogout:
 
             # check if logged out
             client.delete('/logout')
+      
             with client.session_transaction() as session:
                 assert not session['user_id']
             
