@@ -18,9 +18,9 @@ class User(db.Model, SerializerMixin):
     @validates('username')
     def validate_username(self, key, username):
         if username == "":
-            return {'message' : '422 : Unprocessable entry'}, 422
+            return {'errors' : '422 : Unprocessable entry'}, 422
         elif User.query.filter(User.username == username).first():
-            return {'message' : '422 : Unprocessable entry'}, 422
+            return {'errors' : '422 : Unprocessable entry'}, 422
         return username
     
     @hybrid_property

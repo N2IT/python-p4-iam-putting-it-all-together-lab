@@ -40,6 +40,7 @@ function NewRecipe({ user }) {
       if (r.ok) {
         history.push("/");
       } else {
+        debugger
         r.json().then((err) => setErrors(err.errors));
       }
     });
@@ -83,9 +84,10 @@ function NewRecipe({ user }) {
             </Button>
           </FormField>
           <FormField>
-            {errors.map((err) => (
+            {errors ? errors : ""}
+            {/* {errors.map((err) => (
               <Error key={err}>{err}</Error>
-            ))}
+            ))} */}
           </FormField>
         </form>
       </WrapperChild>

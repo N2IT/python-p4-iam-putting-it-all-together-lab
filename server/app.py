@@ -12,7 +12,24 @@ class Signup(Resource):
 
     def post(self):
         # breakpoint()
+        
         data_form = request.get_json()
+        username = data_form.get('username')
+        image_url = data_form.get('image_url')
+        bio = data_form.get('bio')
+
+        user = User.query.filter(User.username == username).first()
+
+        errors = []
+        if username == "":
+            errors.append('Username must be populated')
+
+        if user and username == user.username:
+            errors.append('That username is already taken.')
+
+        if errors:
+            return {'errors': errors}, 422
+        
         if 'username' in data_form:
             new_user = User(
                 username = data_form.get('username'),
@@ -30,7 +47,7 @@ class Signup(Resource):
             return new_user.to_dict(), 201
 
         else:
-            return {'message' : '422: Unprocessable Entry'}, 422
+            return {'errors' : '422: Unprocessable Entry'}, 422
 
 class CheckSession(Resource):
     def get(self):
@@ -38,7 +55,7 @@ class CheckSession(Resource):
             user = User.query.filter(User.id == session.get('user_id')).first()
             return user.to_dict(), 200
         else:
-            return {'message' : '401 : Unauthorized'}, 401
+            return {'errors' : '401 : Unauthorized'}, 401
 
 class Login(Resource):
     def post(self):
@@ -47,13 +64,20 @@ class Login(Resource):
         password = form_data.get('password')
 
         user = User.query.filter(User.username == username).first()
+        breakpoint()
+
+        if username == "":
+            return {"errors" : "401: username needed to login"}, 401
+
+        if password == "":
+            return {'errors' : "401: invalid password"}, 401
 
         if user:
             if user.authenticate(password):
                 session['user_id'] = user.id
                 return user.to_dict(), 200
         
-        return {'error' : '401: Unauthorized'}, 401
+        return {'errors' : '401: Unauthorized'}, 401
 
 
 class Logout(Resource):
@@ -63,7 +87,7 @@ class Logout(Resource):
             session['user_id'] = None
             return {}, 204
     
-        return {'error' : '401: Unauthorized'}, 401
+        return {'errors' : '401: Unauthorized'}, 401
         
         
 class RecipeIndex(Resource):
@@ -73,7 +97,7 @@ class RecipeIndex(Resource):
             return [recipe.to_dict() for recipe in recipes]
         else:
             return {
-                'error' : '401: Unauthorized'
+                'errors' : '401: Unauthorized'
             }, 401
 
     def post(self):
@@ -94,7 +118,7 @@ class RecipeIndex(Resource):
                 return new_recipe.to_dict(), 201
 
             except IntegrityError:
-                return {"error" : "422: Instructions must have 50 characters"}, 422
+                return {"errors" : "422: Instructions must have 50 characters"}, 422
 
     
 
